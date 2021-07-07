@@ -262,8 +262,6 @@ class App {
     if (!workoutEl) return
 
     const workout = this.#workouts.find((workout) => workout.id === workoutEl.dataset.id)
-
-    console.log(workout)
     
     this.#map.setView(workout.coords, this.#mapZoomLevel, {
       animate: true,
@@ -273,8 +271,6 @@ class App {
     })
 
     workout.click()
-
-    console.log(workout.clicks)
   }
 }
 
