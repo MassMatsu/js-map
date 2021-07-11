@@ -9,7 +9,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class Workout {
   date = new Date();
   id = (Date.now() + '').slice(-10);
-  clicks = 0
+  //clicks = 0
 
   constructor(coords, distance, duration) {
     this.coords = coords;
@@ -36,9 +36,9 @@ class Workout {
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${months[this.date.getMonth()]} ${this.date.getDate()}`
   }
 
-  click() {
-    this.clicks++
-  }
+  // click() {
+  //   this.clicks++
+  // }
 }
   
 class Running extends Workout {
@@ -78,6 +78,7 @@ class App {
   #workouts = [];
   constructor() {
     this._getPosition();
+    this._getLocalStorage()
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this))
@@ -109,6 +110,12 @@ class App {
 
     // handling clicks on map
     this.#map.on('click', this._showForm.bind(this));
+
+    // render marker from localStorage if exists
+    this.#workouts.forEach((workout) => {
+      this._renderWorkout(workout);
+      this._renderWorkoutMarker(workout);
+    });
   }
 
   _showForm(mapE) {
@@ -188,6 +195,8 @@ class App {
     this._renderWorkout(workout)
 
     this._hideForm()
+
+    this._setLocalStorage()
   }
 
   _renderWorkoutMarker(workout) {
@@ -262,8 +271,6 @@ class App {
     if (!workoutEl) return
 
     const workout = this.#workouts.find((workout) => workout.id === workoutEl.dataset.id)
-
-    console.log(workout)
     
     this.#map.setView(workout.coords, this.#mapZoomLevel, {
       animate: true,
@@ -272,9 +279,24 @@ class App {
       }
     })
 
-    workout.click()
+    //workout.click()
+  }
 
-    console.log(workout.clicks)
+  _setLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts))
+  }
+
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'))
+
+    if (!data) return
+
+    this.#workouts = data
+  }
+
+  reset() {
+    localStorage.removeItem('workouts')
+    location.reload()
   }
 }
 
